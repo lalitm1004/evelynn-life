@@ -1,15 +1,27 @@
 "use client"
 import { useState, useEffect } from "react"
 
-import { MesloLGS, Terminal } from "@/providers/fonts";
+import { Terminal } from "@/providers/fonts";
 
 export default function UserInterface({ basePath }) {
+
+  const defaultCursor = "_";
+
   const [display, setDisplay] = useState(">");
   const [path, setPath] = useState(basePath);
+  const [cursor, setCursor] = useState(defaultCursor)
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCursor((prevCursor) => (prevCursor === defaultCursor ? "" : defaultCursor));
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const handleCommand = (syntax) => {
-      
+
       const syntaxSplit = syntax.split(" ");
       const command = syntaxSplit[0];
       const args = syntaxSplit.slice(1);
@@ -17,7 +29,7 @@ export default function UserInterface({ basePath }) {
       if (syntax === "") {
         return;
       }
-      
+
       else if (command.toLowerCase() === "clear") {
         setDisplay(">");
       }
@@ -41,7 +53,7 @@ export default function UserInterface({ basePath }) {
         if (args.length === 0) {
           targetPath = "/";
         }
-        
+
         else if (args[0] === "..") {
           const prevPath = path;
           const prevPathSplit = prevPath.split("/")
@@ -115,15 +127,15 @@ export default function UserInterface({ basePath }) {
 
   return (
     <>
-    <div className={`user-interface ${Terminal.className} h-screen flex flex-col justify-end`}>
+    <div className={`${Terminal.className} user-interface h-screen flex flex-col justify-end`}>
       <div id="terminal" className="overflow-y-auto">
         <pre className={Terminal.className}>
-          {display}
+          {display}{cursor}
         </pre>
       </div>
       <hr />
       <div className="">
-        <p className={`path `}>{path}</p>
+        <p className={`path`}>{path}</p>
       </div>
     </div>
     </>

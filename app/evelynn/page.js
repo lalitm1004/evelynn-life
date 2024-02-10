@@ -3,7 +3,6 @@ import Image from "next/image"
 
 import { useSecondsElapsed } from "@/hooks/useSecondsElapsed"
 import evelynnCirclePNG from "@/public/evelynn/e-circle.png"
-import UserInterface from "@/components/UserInterface";
 
 export default function Evelynn() {
   const secondsElapsed = useSecondsElapsed("2020-10-24T01:00:00Z");
