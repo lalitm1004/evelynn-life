@@ -12,16 +12,7 @@ export default function UserInterface({ basePath }) {
   const [cursor, setCursor] = useState(defaultCursor)
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCursor((prevCursor) => (prevCursor === defaultCursor ? "" : defaultCursor));
-    }, 500);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
     const handleCommand = (syntax) => {
-
       const syntaxSplit = syntax.split(" ");
       const command = syntaxSplit[0];
       const args = syntaxSplit.slice(1);
@@ -35,9 +26,6 @@ export default function UserInterface({ basePath }) {
       }
 
       else if (command.toLowerCase() === "go") {
-
-        console.log(path)
-        console.log(basePath)
         if (path == basePath) {
           setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect redundant`);
         }
@@ -63,14 +51,21 @@ export default function UserInterface({ basePath }) {
 
         else {
           const prevPath = path;
-          const formattedArgs = args[0].replace(/^\/+|\/+$/g, "").replace(/\/+/g, '/');
-          if (prevPath==="/") {
-            targetPath = `${prevPath}${formattedArgs}`;
-          } else {
-            targetPath = `${prevPath}/${formattedArgs}`;
+          const formattedPath = args[0].replace(/^\/+|\/+$/g, "").replace(/\/+/g, '/');
+          if (formattedPath === "..") {
+            targetPath = "/";
+          }
+          else if (formattedPath === "") {
+            targetPath = prevPath;
+          }
+          else {
+            if (prevPath==="/") {
+              targetPath = `${prevPath}${formattedPath}`;
+            } else {
+              targetPath = `${prevPath}/${formattedPath}`;
+            }
           }
         }
-        console.log(targetPath)
         setPath(targetPath)
       }
 
@@ -120,13 +115,22 @@ export default function UserInterface({ basePath }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   })
 
+  // Scroll Effect
   useEffect(() => {
     const terminal = document.getElementById("terminal");
     terminal.scrollTo({top: document.body.scrollHeight, behavior:"smooth"});
   }, [display])
 
+  // Cursor Effect
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCursor((prevCursor) => (prevCursor === defaultCursor ? "" : defaultCursor));
+    }, 500);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
-    <>
     <div className={`${Terminal.className} user-interface h-screen flex flex-col justify-end`}>
       <div id="terminal" className="overflow-y-auto">
         <pre className={Terminal.className}>
@@ -138,6 +142,5 @@ export default function UserInterface({ basePath }) {
         <p className={`path`}>{path}</p>
       </div>
     </div>
-    </>
   );
 }
