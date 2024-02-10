@@ -12,7 +12,7 @@ export default function Evelynn() {
         src={evelynnCirclePNG}
         alt={"imitation"}
       />
-      {/* <p className="m-4">{secondsElapsed}</p> */}
+      <p className="m-4">{secondsElapsed}</p>
     </div>
   );
 }
