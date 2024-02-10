@@ -1,6 +1,8 @@
 "use client"
 import { useState, useEffect } from "react"
 
+import { MesloLGS, Terminal } from "@/providers/fonts";
+
 export default function UserInterface({ basePath }) {
   const [display, setDisplay] = useState(">");
   const [path, setPath] = useState(basePath);
@@ -20,10 +22,18 @@ export default function UserInterface({ basePath }) {
         setDisplay(">");
       }
 
-      else if (command.toLowerCase() === "evelynn") {
-        const newWindow = window.open("/evelynn", '_blank', "noopener,noreferrer")
-        if (newWindow) newWindow.opener = null;
-        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect successful`)
+      else if (command.toLowerCase() === "go") {
+
+        console.log(path)
+        console.log(basePath)
+        if (path == basePath) {
+          setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect redundant`);
+        }
+        else {
+          const newWindow = window.open(path, "_blank", "noopener,noreferrer");
+          if (newWindow) newWindow.opener = null;
+          setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect successful`)
+        }
       }
 
       else if (command.toLowerCase() === "cd") {
@@ -41,10 +51,11 @@ export default function UserInterface({ basePath }) {
 
         else {
           const prevPath = path;
+          const formattedArgs = args[0].replace(/^\/+|\/+$/g, "").replace(/\/+/g, '/');
           if (prevPath==="/") {
-            targetPath = `${prevPath}${args[0].replace(/^\/+|\/+$/g, "")}`;
+            targetPath = `${prevPath}${formattedArgs}`;
           } else {
-            targetPath = `${prevPath}/${args[0].replace(/^\/+|\/+$/g, "")}`;
+            targetPath = `${prevPath}/${formattedArgs}`;
           }
         }
         console.log(targetPath)
@@ -98,15 +109,23 @@ export default function UserInterface({ basePath }) {
   })
 
   useEffect(() => {
-    window.scrollTo({top: document.body.scrollHeight, behavior:"smooth"});
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTo({top: document.body.scrollHeight, behavior:"smooth"});
   }, [display])
 
   return (
-    <div className="user-interface">
-      <p className="path">{path}</p>
-      <pre>
-        {display}
-      </pre>
+    <>
+    <div className={`user-interface ${Terminal.className} h-screen flex flex-col justify-end`}>
+      <div id="terminal" className="overflow-y-auto">
+        <pre className={Terminal.className}>
+          {display}
+        </pre>
+      </div>
+      <hr />
+      <div className="">
+        <p className={`path `}>{path}</p>
+      </div>
     </div>
+    </>
   );
 }
