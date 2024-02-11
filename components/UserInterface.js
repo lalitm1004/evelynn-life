@@ -9,7 +9,7 @@ export default function UserInterface({ basePath }) {
 
   const [display, setDisplay] = useState(">");
   const [path, setPath] = useState(basePath);
-  const [cursor, setCursor] = useState(defaultCursor)
+  const [displayCursor, setDisplayCursor] = useState(false);
 
   useEffect(() => {
     const handleCommand = (syntax) => {
@@ -125,7 +125,7 @@ export default function UserInterface({ basePath }) {
   // Cursor Effect
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCursor((prevCursor) => (prevCursor === defaultCursor ? "" : defaultCursor));
+      setDisplayCursor((prevDisplay) => !prevDisplay);
     }, 500);
 
     return () => clearInterval(intervalId);
@@ -135,7 +135,7 @@ export default function UserInterface({ basePath }) {
     <div className={`${Terminal.className} user-interface h-screen flex flex-col justify-end`}>
       <div id="terminal" className="overflow-y-auto">
         <pre className={Terminal.className}>
-          {display}{cursor}
+          {display}{(displayCursor) ? (defaultCursor) : ("")}
         </pre>
       </div>
       <hr />
