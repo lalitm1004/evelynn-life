@@ -5,7 +5,7 @@ import { useSecondsElapsed } from "@/hooks/useSecondsElapsed"
 import evelynnCirclePNG from "@/public/evelynn/e-circle.png"
 
 export default function Evelynn() {
-  const secondsElapsed = useSecondsElapsed("2020-10-24T01:00:00Z");
+  const secondsElapsed = useSecondsElapsed("2020-10-24T01:20:00Z");
   return (
     <div className="h-screen flex flex-col justify-center items-center">
       <Image
