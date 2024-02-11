@@ -82,7 +82,8 @@ export default function UserInterface({ basePath }) {
         "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
         "NumLock", "CapsLock",
         "Delete", "Pause",
-        "AudioVolumeUp", "AudioVolumeDown"
+        "AudioVolumeUp", "AudioVolumeDown",
+        "\\",
       ].indexOf(key) !== -1) {
         return;
       }
