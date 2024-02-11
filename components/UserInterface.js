@@ -46,7 +46,7 @@ export default function UserInterface({ basePath }) {
           const prevPath = path;
           const prevPathSplit = prevPath.split("/")
           const newPath = prevPathSplit.slice(0,prevPathSplit.length - 1).join("/")
-          targetPath = (newPath.length === 0)? "/" : newPath
+          targetPath = (newPath.length === 0) ? "/" : newPath
         }
 
         else {
