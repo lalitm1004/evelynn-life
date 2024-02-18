@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${InterFont.className}`} suppressHydrationWarning={true}>
+      <body className={`${InterFont.className} scrollbar`} suppressHydrationWarning={true}>
         {children}
       </body>
     </html>

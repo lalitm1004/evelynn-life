@@ -6,6 +6,8 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --scrollbar-thumb-color: #ffffff; /* Thumb color */
+  --scrollbar-track-color: #000000; /* Track color */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,3 +33,24 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Customize scrollbar width */
+/* For Firefox */
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+/* For Webkit browsers */
+.scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track-color);
+}
+
