@@ -1,13 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { Terminal } from "@/providers/fonts";
+import { SessionContext } from "@/providers/SessionProvider";
+import axios from "axios";
 
 export default function Home() {
-
-  /* ---------------------------------------------------------------------------------------------------- */
+  
+  const {username, trust, setUsername, setTrust} = useContext(SessionContext)
+  const [display, setDisplay] = useState(">");
+  const [path, setPath] = useState("/");
+  const [allowInput, setAllowInput] = useState(true);
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
   const [isMobile, setIsMobile] = useState(false);
 
+  /* ---------------------------------------------------------------------------------------------------- */
   useEffect(() => {
     const mobileMediaQuery = window.matchMedia('(max-width: 767px)'); // Adjust the breakpoint as needed
 
@@ -26,40 +33,141 @@ export default function Home() {
 
 
   /* ---------------------------------------------------------------------------------------------------- */
-  const [display, setDisplay] = useState(">");
-  const [path, setPath] = useState("/");
-  const [allowInput, setAllowInput] = useState(true);
-
   const appendToDisplay = (append) => {
     setDisplay((prevDisplay) => `${prevDisplay}${append}`);
   }
 
   const handleCommand = async (syntax) => {
     if (syntax == "") return;
+    const commandList = [
+      "clear", "login", "logout", "register", "go", "cd", "test"
+    ]
 
     setAllowInput(false);
     const syntaxSplit = syntax.split(" ");
     const command = syntaxSplit[0];
     const args = syntaxSplit.slice(1);
 
+    if (commandList.indexOf(command.toLowerCase()) === -1) {
+      appendToDisplay(`\nevelynn: ${command}: command not found`)
+    }
 
-    if (command.toLowerCase() === "clear") {
+    else if (command.toLowerCase() === "test") {
+      const string = `hello how are you`;
+      appendToDisplay("\n")
+      for (const letter of string) {
+        appendToDisplay(letter);
+        await new Promise(r => setTimeout(r, 30))
+      }
+    }
+
+    else if (command.toLowerCase() === "clear") {
       setDisplay(">")
+    }
+
+    else if (command.toLowerCase() === "login") {
+      const inputUsername = args[0];
+      const inputPassword = args[1];
+
+      console.log(inputUsername)
+      console.log(inputPassword)
+
+      if (username) {
+        appendToDisplay("\nevelynn: login: login redundant")
+      }
+
+      else if (!(inputUsername && inputPassword)) {
+        appendToDisplay("\nevelynn: login: Invalid arguments /login <username> <password>")
+      } 
+
+      else {
+        const apiLogin = async () => {
+          const postData = {
+            username: inputUsername,
+            password: inputPassword,
+          }
+          try {
+            const response = await axios.post(BACKEND_URL + "/auth/login", postData);
+            if (response.data["error"]) {
+              appendToDisplay(`\nevelynn: login: ${response.data["error"]}`)
+            } else {
+              setUsername(response.data["username"])
+              setTrust(response.data["trust"])
+              appendToDisplay(`\nevelynn: login: ${response.data["username"]} logged in`)
+            }
+          } catch (error) {}
+        }
+        await apiLogin();
+      }
+    }
+
+    else if (command.toLowerCase() === "logout") {
+      if (username) {
+        setUsername(null);
+        setTrust(null);
+        appendToDisplay("\nevelynn: logout: logged out");
+      } else {
+        appendToDisplay("\nevelynn: logout: logout redundant")
+      }
+    }
+
+    else if (command.toLowerCase() === "register") {
+      const inputRegistrationCode = args[0];
+      const inputUsername = args[1];
+      const inputPassword = args[2];
+      const inputConfirmPassword = args[3];
+
+      if (username) {
+        appendToDisplay("\nevelynn: register: Already logged in")
+      }
+
+      else if (!(inputRegistrationCode && inputUsername && inputPassword && inputConfirmPassword)) {
+        appendToDisplay("\nevelynn: register: Invalid arguments /register <registration code> <username> <password> <confirm password>")
+      }
+
+      else if (inputPassword != inputConfirmPassword) {
+        appendToDisplay("\nevelynn: register: <password> does not match <confirm password>")
+      }
+
+      else {
+        const apiRegister = async() => {
+          const postData = {
+            regcode: inputRegistrationCode,
+            username: inputUsername,
+            password: inputPassword,
+          }
+          try {
+            const response = await axios.post(BACKEND_URL + "/auth/register", postData);
+            if (response.data["error"]) {
+              appendToDisplay(`\nevelynn: register: ${response.data["error"]}`)
+            } else {
+              setUsername(response.data["username"]);
+              setTrust(response.data["trust"])
+              appendToDisplay(`\nevelynn: register: ${response.data["username"]} has been registered`)
+            }
+          } catch (error) {}
+        }
+        await apiRegister();
+      }
+    }
+
+    // ALl commands below this are protected behind a login
+    else if (!username) {
+      appendToDisplay("\nevelynn: login required")
     }
 
     else if (command.toLowerCase() === "go") {
       if (path == "/") {
-        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect redundant`);
+        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect redundant`);
       }
       else {
         const newWindow = window.open(path, "_blank", "noopener,noreferrer");
         if (newWindow) newWindow.opener = null;
-        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: redirect successful`)
+        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect successful`)
       }
     }
 
     else if (command.toLowerCase() === "test") {
-      appendToDisplay("tested");
       await new Promise(r => setTimeout(r, 2000));
     }
 
@@ -97,16 +205,13 @@ export default function Home() {
       setPath(targetPath)
     }
 
-
-    else {
-      appendToDisplay(`\nevelynn: ${command}: command not found`)
-    }
     setAllowInput(true);
   }
   /* ---------------------------------------------------------------------------------------------------- */
 
 
   /* ---------------------------------------------------------------------------------------------------- */
+  // Keydown handler
   const handleKeyDown = async (event) => {
     if (!allowInput) return;
 
@@ -193,7 +298,7 @@ export default function Home() {
         <div className={`${Terminal.className} user-interface h-screen flex flex-col justify-end`}>
 
           <div id="terminal" className="overflow-y-auto">
-            <pre className={Terminal.className}>
+            <pre className={`${Terminal.className} text-wrap break-all`}>
               {display}{(displayCursor && allowInput) ? (defaultCursor) : ("")}
             </pre>
           </div>
@@ -205,7 +310,7 @@ export default function Home() {
               <p>{path}</p>
             </div>
             <div className="user flex-shrink mx-2">
-              <p>not logged in</p>
+              <p>{(username) ? `${username}` : "not logged in"}</p>
             </div>
           </div>
 
