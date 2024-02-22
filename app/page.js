@@ -40,7 +40,7 @@ export default function Home() {
   const handleCommand = async (syntax) => {
     if (syntax == "") return;
     const commandList = [
-      "clear", "login", "logout", "register", "go", "cd", "test"
+      "clear", "login", "logout", "register", "go", "cd", "test", "createregcode"
     ]
 
     setAllowInput(false);
@@ -156,6 +156,27 @@ export default function Home() {
       appendToDisplay("\nevelynn: login required")
     }
 
+    else if (command.toLowerCase() === "createregcode") {
+      const apiCreateRegCode = async () => {
+        const postData = {
+          username: username,
+        }
+        try {
+          const response = await axios.post(BACKEND_URL + '/auth/createregcode', postData);
+          if (response.data["error"]) {
+            appendToDisplay(`\nevelynn: createregcode: ${response.data["error"]}`);
+          } else {
+            appendToDisplay(`\nevelynn: createregcode: created regcode ${response.data["regcode"]}`)
+          }
+        } catch (error) {}
+      }
+      if (args[0] === username) {
+        await apiCreateRegCode();
+      } else {
+        appendToDisplay(`\nevelynn: createregcode: this will irreversibly reset your trust to zero. Run /createregcode ${username}`)
+      }
+    }
+
     else if (command.toLowerCase() === "go") {
       if (path == "/") {
         setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect redundant`);
@@ -165,10 +186,6 @@ export default function Home() {
         if (newWindow) newWindow.opener = null;
         setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect successful`)
       }
-    }
-
-    else if (command.toLowerCase() === "test") {
-      await new Promise(r => setTimeout(r, 2000));
     }
 
     else if (command.toLowerCase() === "cd") {
