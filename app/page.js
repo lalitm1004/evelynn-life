@@ -14,6 +14,18 @@ export default function Home() {
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
   const [isMobile, setIsMobile] = useState(false);
 
+
+  /* ---------------------------------------------------------------------------------------------------- */
+  // Retrieve session
+  useEffect(() => {
+    if (sessionStorage.getItem("evelynn.username")) {
+      setUsername(sessionStorage.getItem("evelynn.username"))
+      setTrust(Number(sessionStorage.getItem("evelynn.trust")))
+    }
+  }, [])
+
+  /* ---------------------------------------------------------------------------------------------------- */
+
   /* ---------------------------------------------------------------------------------------------------- */
   useEffect(() => {
     const mobileMediaQuery = window.matchMedia('(max-width: 767px)'); // Adjust the breakpoint as needed
@@ -40,7 +52,7 @@ export default function Home() {
   const handleCommand = async (syntax) => {
     if (syntax == "") return;
     const commandList = [
-      "clear", "login", "logout", "register", "go", "cd", "test", "createregcode"
+      "clear", "login", "logout", "register", "go", "cd", "test", "createregcode", "profile"
     ]
 
     setAllowInput(false);
@@ -49,7 +61,7 @@ export default function Home() {
     const args = syntaxSplit.slice(1);
 
     if (commandList.indexOf(command.toLowerCase()) === -1) {
-      appendToDisplay(`\nevelynn: ${command}: command not found`)
+      appendToDisplay(`\nevelynn: ${command}: Command not found`)
     }
 
     else if (command.toLowerCase() === "test") {
@@ -73,7 +85,7 @@ export default function Home() {
       console.log(inputPassword)
 
       if (username) {
-        appendToDisplay("\nevelynn: login: login redundant")
+        appendToDisplay("\nevelynn: login: Login redundant")
       }
 
       else if (!(inputUsername && inputPassword)) {
@@ -93,6 +105,8 @@ export default function Home() {
             } else {
               setUsername(response.data["username"])
               setTrust(response.data["trust"])
+              sessionStorage.setItem("evelynn.username", response.data["username"])
+              sessionStorage.setItem("evelynn.trust", response.data["trust"])
               appendToDisplay(`\nevelynn: login: ${response.data["username"]} logged in`)
             }
           } catch (error) {}
@@ -105,9 +119,11 @@ export default function Home() {
       if (username) {
         setUsername(null);
         setTrust(null);
-        appendToDisplay("\nevelynn: logout: logged out");
+        sessionStorage.removeItem("evelynn.username")
+        sessionStorage.removeItem("evelynn.trust")
+        appendToDisplay("\nevelynn: logout: Logged out");
       } else {
-        appendToDisplay("\nevelynn: logout: logout redundant")
+        appendToDisplay("\nevelynn: logout: Logout redundant")
       }
     }
 
@@ -143,6 +159,8 @@ export default function Home() {
             } else {
               setUsername(response.data["username"]);
               setTrust(response.data["trust"])
+              sessionStorage.setItem("evelynn.username", response.data["username"])
+              sessionStorage.setItem("evelynn.trust", response.data["trust"])
               appendToDisplay(`\nevelynn: register: ${response.data["username"]} has been registered`)
             }
           } catch (error) {}
@@ -167,25 +185,25 @@ export default function Home() {
             appendToDisplay(`\nevelynn: createregcode: ${response.data["error"]}`);
           } else {
             navigator.clipboard.writeText(response.data["regcode"])
-            appendToDisplay(`\nevelynn: createregcode: created regcode ${response.data["regcode"]}. It has been copied to your clipboard`)
+            appendToDisplay(`\nevelynn: createregcode: Created regcode ${response.data["regcode"]}. It has been copied to your clipboard`)
           }
         } catch (error) {}
       }
       if (args[0] === username) {
         await apiCreateRegCode();
       } else {
-        appendToDisplay(`\nevelynn: createregcode: this will irreversibly reset your trust to zero. Run /createregcode ${username}`)
+        appendToDisplay(`\nevelynn: createregcode: This will irreversibly reset your trust to zero. Run /createregcode ${username}`)
       }
     }
 
     else if (command.toLowerCase() === "go") {
       if (path == "/") {
-        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect redundant`);
+        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: Redirect redundant`);
       }
       else {
         const newWindow = window.open(path, "_blank", "noopener,noreferrer");
         if (newWindow) newWindow.opener = null;
-        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: redirect successful`)
+        setDisplay((prevDisplay) => `${prevDisplay}\nevelynn: go: Redirect successful`)
       }
     }
 
@@ -223,6 +241,10 @@ export default function Home() {
       setPath(targetPath)
     }
 
+    else if (command.toLowerCase() === "profile") {
+      appendToDisplay(`\nevelynn: profile:\n [-] Username : ${username}\n [-] Trust       : ${trust}`);
+    }
+
     setAllowInput(true);
   }
   /* ---------------------------------------------------------------------------------------------------- */
@@ -252,7 +274,7 @@ export default function Home() {
       const syntax = displaySplit[displaySplit.length - 1].trim()
       await handleCommand(syntax).then(() => {
         if (!(syntax.toLowerCase().startsWith("clear"))) {
-          appendToDisplay("\n>");
+          appendToDisplay("\n\n>");
         }
       });
     }
