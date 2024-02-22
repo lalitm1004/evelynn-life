@@ -166,7 +166,8 @@ export default function Home() {
           if (response.data["error"]) {
             appendToDisplay(`\nevelynn: createregcode: ${response.data["error"]}`);
           } else {
-            appendToDisplay(`\nevelynn: createregcode: created regcode ${response.data["regcode"]}`)
+            navigator.clipboard.writeText(response.data["regcode"])
+            appendToDisplay(`\nevelynn: createregcode: created regcode ${response.data["regcode"]}. It has been copied to your clipboard`)
           }
         } catch (error) {}
       }
