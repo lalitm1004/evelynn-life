@@ -55,8 +55,8 @@ export default function Home() {
     }
 
     const goHelper = async (args:Array<string>) => {
-      if (args.length > 0) { appendText("evelynn: go: too many parameters"); return; }
 
+      if (args.length > 0) { appendText("evelynn: go: too many parameters"); return; }
 
       if (path.length === 0) { appendText("evelynn: go: redirect redundant"); return; }
 
@@ -95,6 +95,8 @@ export default function Home() {
 
       if (args.length > 0) { appendText("evelynn: logout: too many parameters"); return; }
 
+      clearHelper(args);
+      setPath([]);
       changeUsername(null);
       changeTrust(null);
     }
@@ -154,6 +156,7 @@ export default function Home() {
     }
 
     const profileHelper = async(args:Array<string>) => {
+
       if (args.length > 0) { appendText("evelynn: profile: too many parameters"); return; }
 
       await (async () => {
@@ -182,6 +185,7 @@ export default function Home() {
           newTrust: Number(args[0])
         }
         await axios.post(`api/user/trust/set`, postData);
+        localStorage.setItem("trust", `${args[0]}`)
       })();
     }
 
@@ -196,9 +200,13 @@ export default function Home() {
         if (response.data.error) {
           appendText(`evelynn: listregcode: ${response.data.error}`);
         }
-        appendText(`--=${username}=--`)
-        for (const regcode of response.data.regcodes) {
-          appendText(`[] ${regcode.split("-")[0]} - ${regcode.split("-")[1]}`)
+        if (response.data.regcodes.length === 0) {
+          appendText(`evelynn: listregcode: no regcodes created yet`)
+        } else {
+          appendText(`--=${username}=--`)
+          for (const regcode of response.data.regcodes) {
+            appendText(`[] ${regcode.split("-")[0]} - ${regcode.split("-")[1]}`)
+          }
         }
       })();
     }

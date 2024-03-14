@@ -21,8 +21,9 @@ const terminalFont = localFont({
 })
 
 export const metadata: Metadata = {
-  title: "life",
+  title: "evelynn",
   description: "Dedicated to ",
+  authors: [{name: "[-----]"}]
 };
 
 export default function RootLayout({

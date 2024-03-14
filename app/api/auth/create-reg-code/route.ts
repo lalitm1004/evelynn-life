@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   let regcode:string | null = null;
   while (!regcode) {
     const possibleRegcode = generateRegcode();
-    const match: IRegcode|null = await  Regcode.findOne({regcode: possibleRegcode});
+    const match: IRegcode | null = await  Regcode.findOne({regcode: possibleRegcode});
     if (!match) regcode = possibleRegcode;
   }
 
