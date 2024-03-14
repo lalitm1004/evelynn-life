@@ -69,7 +69,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
               changeInTrust: changeInTrust,
             }
 
-            if (username) await axios.post(`api/user/trust`, postData);
+            if (username) await axios.post(`api/user/trust/change`, postData);
           })();
 
           return prev + changeInTrust;
