@@ -57,7 +57,8 @@ export default function Home() {
     const goHelper = async (args:Array<string>) => {
       if (args.length > 0) { appendText("evelynn: go: too many parameters"); return; }
 
-      if (path.length === 0) appendText("evelynn: go: redirect redundant");
+
+      if (path.length === 0) { appendText("evelynn: go: redirect redundant"); return; }
 
       const newWindow = window.open(`/${path.join("/")}`, "_blank", "noopener, noreferrer");
       if (newWindow) newWindow.opener = null;
@@ -67,9 +68,9 @@ export default function Home() {
     const loginHelper = async (args: Array<string>) => {
 
       if (args.length > 2) { appendText("evelynn: login: too many arguments"); return; }
-      
+
       if (username) { appendText("evelynn: login: already logged in"); return; }
-      
+
       const inputUsername = args[0];
       const inputPassword = args[1];
       if (!(inputUsername && inputPassword)) { appendText("evelynn: login: syntax error: login <username> <password>"); return; }
@@ -108,7 +109,7 @@ export default function Home() {
       const inputRegcode = args[1]
       const inputPassword = args[2];
       const inputConfirmPassword = args[3];
-    
+
       if (!(inputUsername && inputRegcode && inputPassword && inputConfirmPassword)) { appendText("evelynn: register: syntax error: register <username> <regcode> <password> <confirmpassword>"); return; }
 
       await (async () => {
@@ -126,13 +127,13 @@ export default function Home() {
         changeTrust(response.data.trust);
         appendText(`evelynn: register: registered and logged in as ${response.data.username}`);
       })();
-    
+
     }
 
     const createRegCodeHelper = async (args:Array<string>) => {
-      
+
       if (args.length > 1) { appendText("evelynn: createregcode: too many parameters"); return; }
-      
+
       const confirmation = args[0]
       if (!confirmation) { appendText("evelynn: createregcode: you can create a maximum of 3 regcodes: createregcode --confirm"); return; }
 
@@ -231,15 +232,15 @@ export default function Home() {
       else if (command.toLowerCase() === "login") await loginHelper(args);
 
       else if (command.toLowerCase() === "logout") await logoutHelper(args);
-    
+
       else if (command.toLowerCase() === "register") await registerHelper(args);
 
       else if (!username) await appendText("evelynn: login required");
 
       else if (command.toLowerCase() === "createregcode") await createRegCodeHelper(args);
-      
+
       else if (command.toLowerCase() === "listregcode") await listRegCodeHelper(args);
-      
+
       else if (command.toLowerCase() === "cd") await cdHelper(args);
 
       else if (command.toLowerCase() === "go") await goHelper(args);

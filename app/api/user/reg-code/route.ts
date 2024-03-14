@@ -13,7 +13,7 @@ interface IResponseJson {
 
 export async function POST(request: NextRequest) {
   const { username }: IRequestJson = await request.json();
-  
+
   if (!(username)) {
     return NextResponse.json({"error": "missing parameters"}, {status: 200})
   }

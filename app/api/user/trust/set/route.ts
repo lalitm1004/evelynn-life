@@ -10,7 +10,7 @@ interface IRequestJson {
 
 export async function POST(request: NextRequest) {
   const { username, newTrust }: IRequestJson = await request.json();
-  
+
   if (!(username && newTrust)) {
     return NextResponse.json({"error": "missing parameters"}, {status: 400});
   }

@@ -54,7 +54,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     else {
       localStorage.removeItem("set-at");
       localStorage.removeItem("username");
-    } 
+    }
   }
 
   const changeTrust = (changeInTrust: number | null) => {
