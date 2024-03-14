@@ -79,7 +79,7 @@ export default function Home() {
           username: inputUsername,
           password: inputPassword,
         };
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/auth/login`, postData);
+        const response = await axios.post(`api/auth/login`, postData);
         if (response.data.error) {
           appendText(`evelynn: login: ${response.data.error}`);
           return;
@@ -117,7 +117,7 @@ export default function Home() {
           regcode: inputRegcode,
           password: inputPassword,
         }
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/auth/register`, postData);
+        const response = await axios.post(`api/auth/register`, postData);
         if (response.data.error) {
           appendText(`evelynn: register: ${response.data.error}`)
           return;
@@ -142,7 +142,7 @@ export default function Home() {
         const postData = {
           username: username
         }
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/auth/create-reg-code`, postData);
+        const response = await axios.post(`api/auth/create-reg-code`, postData);
         if (response.data.error) {
           appendText(`evelynn: createregcode: ${response.data.error}`);
           return;
@@ -159,7 +159,7 @@ export default function Home() {
         const postData = {
           username: username
         }
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user`, postData);
+        const response = await axios.post(`api/user`, postData);
         if (response.data.error) {
           appendText(`evelynn: profile: ${response.data.error}`);
           return;
@@ -180,7 +180,7 @@ export default function Home() {
           username: username,
           newTrust: Number(args[0])
         }
-        await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/trust/set`, postData);
+        await axios.post(`api/user/trust/set`, postData);
       })();
     }
 
@@ -191,7 +191,7 @@ export default function Home() {
         const postData = {
           username: username
         }
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/user/reg-code`, postData)
+        const response = await axios.post(`api/user/reg-code`, postData)
         if (response.data.error) {
           appendText(`evelynn: listregcode: ${response.data.error}`);
         }
