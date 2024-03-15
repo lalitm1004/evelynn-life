@@ -25,11 +25,19 @@ export default function Home() {
       setChatHistory(prev => [...prev, str]);
     }
 
-    const streamHelper = async (str: string) => {
+    const streamText = async (str: string) => {
       setChatHistory(prev => [...prev, ""]);
       for (const letter of str) {
         setChatHistory(prev => [...prev.slice(0, -1), prev[prev.length - 1] + letter])
         await new Promise(r => setTimeout(r, 30));
+      }
+    }
+    
+    const loadingBar = async (title:string, durationS: number) => {
+      setChatHistory(prev => [...prev, ""]);
+      for (let i = 0; i < 50; i++) {
+        setChatHistory(prev => [...prev.slice(0, -1), `${title} [ ${"█".repeat(i)} ]`]);
+        await new Promise(r => setTimeout(r, (durationS * 1000) / 50));
       }
     }
 
@@ -43,9 +51,11 @@ export default function Home() {
     }
 
     const cdHelper = async (args: Array<string>) => {
+      console.log(path);
 
       if (args.length > 1) { appendText("evelynn: cd: too many arguments"); return; }
       if (args.length === 0) {setPath([]); return;};
+
 
       const targetPath = args[0]
       const targetPathSplit = targetPath.split("/");
@@ -211,6 +221,11 @@ export default function Home() {
       })();
     }
 
+    const lsHelper = async (args: Array<string>) => {
+      if (args.length > 0) { appendText("evelynn: ls: too many arguments"); return; }
+
+    }
+
     /* --------------- */
 
     const handleCommand = async (syntax: string) => {
@@ -226,14 +241,14 @@ export default function Home() {
         "clear", "cd", "go",
         "profile", "help", "listregcode",
 
-        "stream", "trust",
+        "stream", "trust", "load",
       ]
 
       if (command === "") {}
 
       else if (commandList.indexOf(command.toLowerCase()) === -1) await appendText(`evelynn: ${command}: command not found`);
 
-      else if (command.toLowerCase() === "stream") await streamHelper("hello how are you?");
+      else if (command.toLowerCase() === "stream") await streamText("hello how are you?");
 
       else if (command.toLowerCase() === "clear") await clearHelper(args);
 
@@ -255,6 +270,7 @@ export default function Home() {
 
       else if (command.toLowerCase() === "profile") await profileHelper(args);
 
+      else if (command.toLowerCase() === "load") await loadingBar("evelynn: loading assets: ", 1.0);
 
       else if (command.toLowerCase() === "trust") await trustHelper(args);
 
@@ -264,6 +280,12 @@ export default function Home() {
     const handleKeyDown = async (event: KeyboardEvent) => {
 
       const key = event.key;
+
+      if ([
+        "ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft", "Spacebar"
+      ].indexOf(key) !== -1 ) {
+        event.preventDefault();
+      }
 
       const ignoredKeys = [
         "Alt", "Escape", "Control", "Shift", "Meta", "Tab",
@@ -293,6 +315,7 @@ export default function Home() {
         else if (key === "Enter") {
           setCurrentLine("");
           if (currentLine.toLowerCase() !== "clear") setChatHistory(prev => [...prev, currentLine]);
+          setChatHistory(prev => [...prev, "{filler}"])
           await handleCommand(currentLine);
           setChatHistory(prev => [...prev, "{filler}"])
           setCursorPosition(0);
